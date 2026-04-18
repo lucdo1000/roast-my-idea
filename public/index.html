@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roast My Idea — Brutal AI Feedback for Your Startup</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --border: #222;
+      --text: #f0f0f0;
+      --muted: #888;
+      --accent: #ff4d1c;
+      --accent-dim: rgba(255, 77, 28, 0.15);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    nav {
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--text); }
+
+    .hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(255,77,28,0.3);
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+
+    h1 em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 540px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .cta-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .waitlist-form {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .waitlist-form input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .waitlist-form input:focus {
+      border-color: var(--accent);
+    }
+
+    .waitlist-form input::placeholder { color: var(--muted); }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.98); }
+
+    .cta-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .success-msg {
+      display: none;
+      color: #4ade80;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* How it works */
+    .section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .section h2 {
+      text-align: center;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 3.5rem;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(255,77,28,0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .step h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .step p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Sample roast */
+    .roast-card {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .roast-card-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .roast-card-header .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .roast-card-header span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .roast-card-body {
+      padding: 1.5rem;
+    }
+
+    .idea-input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      font-style: italic;
+    }
+
+    .roast-output h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+
+    .verdict {
+      display: inline-block;
+      background: rgba(239,68,68,0.12);
+      color: #f87171;
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 6px;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .roast-output p {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+
+    .market-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat {
+      flex: 1;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+
+    .stat .label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+
+    .stat .value {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .plan {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .plan.featured {
+      border-color: var(--accent);
+      position: relative;
+    }
+
+    .plan-tag {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    .plan-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .plan-price {
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.25rem;
+    }
+
+    .plan-price span {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .plan-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 1.75rem;
+    }
+
+    .plan-features li {
+      font-size: 0.88rem;
+      padding: 0.35rem 0;
+      color: var(--text);
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .btn-full { width: 100%; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 540px) {
+      .waitlist-form { flex-direction: column; }
+      .market-stats { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Roast<span>My</span>Idea</div>
+  <a href="#waitlist">Get early access →</a>
+</nav>
+
+<section class="hero">
+  <div class="badge">🔥 AI-powered reality check</div>
+  <h1>Your idea deserves a<br><em>brutal</em> honest opinion</h1>
+  <p class="subtitle">Paste your startup idea. Get a ruthless AI roast, market size estimate, and specific ways to make it actually work — in seconds.</p>
+
+  <div class="cta-group" id="waitlist">
+    <form class="waitlist-form" onsubmit="handleSubmit(event)">
+      <input type="email" placeholder="your@email.com" required id="email-input">
+      <button type="submit" class="btn">Join waitlist</button>
+    </form>
+    <p class="cta-note">Free roasts at launch. No spam, ever.</p>
+    <p class="success-msg" id="success-msg">You're on the list. We'll be in touch 🔥</p>
+  </div>
+</section>
+
+<section class="section">
+  <p class="section-label">How it works</p>
+  <h2>Three steps to the truth</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Describe your idea</h3>
+      <p>Paste a paragraph about what you're building — product, target market, how you make money.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>AI tears it apart</h3>
+      <p>Our model identifies every weakness: why it's been done, who's already winning, where you'll fail.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Get the real verdict</h3>
+      <p>Dead on arrival, needs work, or actually good? Plus a market size estimate and specific fixes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+  <p class="section-label">Sample output</p>
+  <h2>What a roast looks like</h2>
+  <div class="roast-card">
+    <div class="roast-card-header">
+      <div class="dot"></div>
+      <span>RoastMyIdea — Analysis</span>
+    </div>
+    <div class="roast-card-body">
+      <div class="idea-input">"An app that lets you rate and review your Uber drivers before the trip ends so they get real-time feedback."</div>
+      <div class="roast-output">
+        <h4>Verdict</h4>
+        <div class="verdict">Needs serious rethinking</div>
+        <p>Uber already has a post-trip rating system — you're describing a feature request, not a startup. Real-time ratings during a ride create safety concerns Uber's legal team would never allow, and any driver who knew they were being rated mid-trip would either drive erratically or game the system immediately. The "market" here is one API call away from being owned by Uber.</p>
+        <p><strong>What could work:</strong> Shift to independent contractors (DoorDash, TaskRabbit) where platform ratings lag significantly. Build a reputation layer that works across platforms. That's a real gap.</p>
+        <div class="market-stats">
+          <div class="stat">
+            <div class="label">TAM</div>
+            <div class="value">$4.2B</div>
+          </div>
+          <div class="stat">
+            <div class="label">Competition</div>
+            <div class="value" style="color: #f87171;">High</div>
+          </div>
+          <div class="stat">
+            <div class="label">Viability</div>
+            <div class="value" style="color: #fbbf24;">3/10</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+  <p class="section-label">Pricing</p>
+  <h2>Simple and honest</h2>
+  <div class="pricing-grid">
+    <div class="plan">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-desc">Try it out</div>
+      <ul class="plan-features">
+        <li>2 roasts per month</li>
+        <li>Verdict + summary</li>
+        <li>Market size estimate</li>
+      </ul>
+      <button class="btn-outline">Get started</button>
+    </div>
+    <div class="plan featured">
+      <div class="plan-tag">Most popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$9<span>/mo</span></div>
+      <div class="plan-desc">For serious founders</div>
+      <ul class="plan-features">
+        <li>Unlimited roasts</li>
+        <li>Competitor analysis</li>
+        <li>Pivot suggestions</li>
+        <li>Save & compare ideas</li>
+      </ul>
+      <button class="btn btn-full" onclick="document.getElementById('email-input').focus()">Join waitlist</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 RoastMyIdea. Built in 1 hour. Don't take it personally.</p>
+</footer>
+
+<script>
+  const waitlist = [];
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value;
+    waitlist.push({ email, ts: new Date().toISOString() });
+    // In production: POST to /api/waitlist
+    console.log('Waitlist:', waitlist);
+    document.querySelector('.waitlist-form').style.display = 'none';
+    document.querySelector('.cta-note').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
+  }
+</script>
+</body>
+</html>
