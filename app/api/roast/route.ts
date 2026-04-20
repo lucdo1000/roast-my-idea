@@ -24,7 +24,8 @@ Respond in this exact JSON format:
   "killerRisk": "<the single biggest risk that will kill this>",
   "marketReality": "<honest market assessment: size, competition, saturation>",
   "actuallyGood": "<1-2 things that are genuinely not terrible about this idea>",
-  "verdict_emoji": "<one emoji that captures the vibe>"
+  "verdict_emoji": "<one emoji that captures the vibe>",
+  "improvementPlan": "<3-4 specific, concrete changes that would meaningfully raise the score — not generic advice, actual pivots or additions>"
 }
 
 Be specific to THEIR idea, not generic. Reference real competitors, real market conditions, real problems. Don't be encouraging unless it's actually warranted.`;
